@@ -13,8 +13,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import net.javaguides.springboot.model.Department;
 import net.javaguides.springboot.model.Role;
 import net.javaguides.springboot.model.User;
+import net.javaguides.springboot.repository.DepartmentRepository;
 import net.javaguides.springboot.repository.UserRepository;
 import net.javaguides.springboot.web.dto.UserRegistrationDto;
 
@@ -25,7 +27,8 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+	@Autowired
+	private DepartmentRepository departmentRepository;
 	public UserServiceImpl(UserRepository userRepository) {
 		super();
 		this.userRepository = userRepository;
@@ -33,12 +36,17 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public User save(UserRegistrationDto registrationDto) {
+		Department department = departmentRepository.findById(registrationDto.getDepartment().getDepartment_id()).orElseThrow(() -> new RuntimeException("Department not found"));
 		User user = new User(registrationDto.getFirstName(), 
-				registrationDto.getLastName(), registrationDto.getEmail(),
-				passwordEncoder.encode(registrationDto.getPassword()), Arrays.asList(new Role("ROLE_USER")));
+				registrationDto.getLastName(), 
+				registrationDto.getEmail(),
+				passwordEncoder.encode(registrationDto.getPassword()), 
+				Arrays.asList(new Role("ROLE_USER")), 
+				department);
 		
 		return userRepository.save(user);
 	}
+	
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

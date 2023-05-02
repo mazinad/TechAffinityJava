@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
 <meta charset="ISO-8859-1">
 <title>Management System</title>
@@ -12,13 +13,13 @@
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<div class="container-fluid">
-		  <a class="navbar-brand" th:href="@{/}">Home</a>
+		  <a class="navbar-brand" th:href="@{/department}">Home</a>
 		  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		  </button>
 		  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 			<div class="navbar-nav">
-			  <a class="nav-link active"  aria-current="page" th:href="@{/department}">Department</a>
+			  <a class="nav-link active"  aria-current="page" th:href="@{/}">User</a>
 			  <a class="nav-link active"  aria-current="page" th:href="@{/logout}">Logout</a>
 			</div>
 		  </div>
@@ -29,47 +30,13 @@
 	<br>
 	<div class="container">
 		<hr>
-		<form class="row g-3 needs-validation" novalidate action="#" th:action="@{/registration}" th:object="${user}" method="POST">
+		<form class="row g-3 needs-validation" novalidate action="#" th:action="@{/saveDepartments}" th:object="${department}" method="POST">
 			<div class ="col-md-4">
-			  <label for="validationCustom01" class="form-label">First name</label>
-			  <input type="text" class="form-control" id="validationCustom01" value="Mark" th:field="*{firstName}" required>
-			  <div class="valid-feedback">
-				
+			  <label for="validationCustom01" class="form-label">Name</label>
+			  <input type="text" class="form-control" id="validationCustom01" value="Mark" th:field="*{department_name}" required>
+			  <div class="valid-feedback">		
 			  </div>
 			</div>
-			<div class="col-md-12">
-			  <label for="validationCustom02" class="form-label">Last name</label>
-			  <input type="text" class="form-control col-md-4" id="validationCustom02" value="Otto" th:field="*{lastName}" required>
-			  <div class="valid-feedback">
-			  </div>
-			</div>
-			<div class="col-md-12">
-				<label for="validationCustom04" class="form-label">Department</label>
-				<select class="form-select col-md-4" id="validationCustom04" th:field="*{department}" required>
-
-					<th:block th:each="cat: ${listDepartments}">
-                        <option th:text="${cat.department_name}" th:value="${cat.department_id}" />
-                    </th:block>
-				</select>
-				<div class="invalid-feedback">
-				  Please select a valid Department.
-				</div>
-			  </div>
-			<div class="col-md-4">
-			  <label for="validationCustomUsername" class="form-label">Username</label>
-			  <div class="input-group has-validation">
-				<input type="email" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" th:field="*{email}" required>
-				<div class="invalid-feedback">
-				  Please choose an Email
-				</div>
-			  </div>
-			</div>
-			<div class ="col-md-12">
-				<label for="validationCustomPassword" class="form-label">Password</label>
-				<input type="text" class="form-control col-md-4" id="validationCustomPassword" value="Mark" th:field="*{password}" required>
-				<div class="valid-feedback"> 
-				</div>
-			  </div>
 			<div class="col-12">
 			  <button class="btn btn-primary" type="submit">Save</button>
 			</div>

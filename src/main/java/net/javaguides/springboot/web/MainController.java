@@ -38,6 +38,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import net.javaguides.helper.UserExcelExporter;
 import net.javaguides.springboot.model.User;
 import net.javaguides.springboot.repository.UserRepository;
+import net.javaguides.springboot.service.DepartmentService;
 import net.javaguides.springboot.service.UserService;
 
 @Controller
@@ -49,6 +50,8 @@ public class MainController {
 	private UserRepository userRepository;
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private DepartmentService departmentService;
 	@GetMapping("/login")
 	public String login() {
 		return "login";
@@ -168,8 +171,8 @@ public class MainController {
        }
        return "updateUser";
    }
-   @PostMapping("/updateUser")
-   public String updateUser(@ModelAttribute("user") User user, Model model) {
+      @PostMapping("/updateUser")
+       public String updateUser(@ModelAttribute("user") User user, Model model) {
     try {
         userService.updateUser(user);
         return "redirect:/"; // Redirect to the user list page
