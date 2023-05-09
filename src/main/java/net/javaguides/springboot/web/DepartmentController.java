@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -60,11 +61,6 @@ public class DepartmentController {
         model.addAttribute("department", department);
         return "update_department";
     }
-    @GetMapping("/deleteDepartment/{id}")
-    public String deleteDepartment(@PathVariable(value = "id") long id){
-        this.departmentService.deleteDepartmentById(id);
-        return "redirect:/department";
-    }
     @GetMapping("/export-to-excel1")
     public void exportIntoExcelFile(HttpServletResponse response) throws IOException {
         response.setContentType("application/octet-stream");
@@ -72,56 +68,71 @@ public class DepartmentController {
         String currentDateTime = dateFormatter.format(new Date());
 
         String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename= user" + currentDateTime + ".xlsx";
+        String headerValue = "attachment; filename= department" + currentDateTime + ".xlsx";
         response.setHeader(headerKey, headerValue);
 		List<Department> listUsers = departmentService.getAllDepartments();
 		DepartmentExcelExporter excelExporter = new DepartmentExcelExporter(listUsers);
 		excelExporter.generateExcelFile(response);
 	}
-//     @PostMapping("/upload-departments")
-//     public String uploadDepartments(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws EncryptedDocumentException, IOException {
-//     System.out.println("file: " + file);
-//     if (file.isEmpty()) {
-//         redirectAttributes.addAttribute("error", "No file selected");
-//         return "redirect:/";
-//     }
-//     // Read Excel file using Apache POI
-//     Workbook workbook = WorkbookFactory.create(new ByteArrayInputStream(file.getBytes()));
-//     Sheet sheet = workbook.getSheetAt(0);
+    @PostMapping("/upload-departments")
+    public String uploadDepartments(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws EncryptedDocumentException, IOException {
+    System.out.println("file: " + file);
+    if (file.isEmpty()) {
+        redirectAttributes.addAttribute("error", "No file selected");
+        return "redirect:/department";
+    }
+    // Read Excel file using Apache POI
+    Workbook workbook = WorkbookFactory.create(new ByteArrayInputStream(file.getBytes()));
+    Sheet sheet = workbook.getSheetAt(0);
 
-//     // Parse data and save into database using ORM
-//     for (Row row : sheet) {
-//         if (row.getRowNum() < sheet.getFirstRowNum() + 1) {
-//             continue; // Skip header row
-//         }
-//         if (isRowEmpty(row)) {
-//             redirectAttributes.addAttribute("error", "Empty row found at row number " + (row.getRowNum() + 1));
-//             return "redirect:/";
-//         }
-//         String name = row.getCell(0).getStringCellValue();
-//         Department department;
-//         if (departmentRepository.existsByDepartment_name(name)) {
-//             System.out.println("Updating department: " + name);
-//             department = departmentRepository.findByDepartment_name(name);
-//         } else {
-//             department = new Department();
-//             department.setDepartment_name(name);
-//         }
-//         departmentRepository.save(department);
-//     }
+    // Parse data and save into database using ORM
+    for (Row row : sheet) {
+        if (row.getRowNum() < sheet.getFirstRowNum() + 1) {
+            continue; // Skip header row
+        }
+        if (isRowEmpty(row)) {
+            redirectAttributes.addAttribute("error", "Empty row found at row number " + (row.getRowNum() + 1));
+            return "redirect:/department";
+        }
+        String department_name = row.getCell(1).getStringCellValue();
+        Department department;
+        if (departmentRepository.existsByDepartmentName(department_name)) {
+            System.out.println("Updating department: " + department_name);
+            department = departmentRepository.findByDepartmentName(department_name);
+        } else {
+            department = new Department();
+            department.setDepartmentName(department_name);
+        }
+        departmentRepository.save(department);
+    }
 
-//     redirectAttributes.addAttribute("success", "File uploaded successfully");
-//         return "redirect:/";
-// }
-// private boolean isRowEmpty(Row row) {
-//     boolean isEmpty = true;
-//     for (int cellNum = row.getFirstCellNum(); cellNum <= row.getLastCellNum(); cellNum++) {
-//         Cell cell = row.getCell(cellNum);
-//         if (cell != null && cell.getCellType() != CellType.BLANK) {
-//             isEmpty = false;
-//             break;
-//         }
-//     }
-//     return isEmpty;
-// }
+    redirectAttributes.addAttribute("success", "File uploaded successfully");
+        return "redirect:/department";
+}
+private boolean isRowEmpty(Row row) {
+    boolean isEmpty = true;
+    for (int cellNum = row.getFirstCellNum(); cellNum <= row.getLastCellNum(); cellNum++) {
+        Cell cell = row.getCell(cellNum);
+        if (cell != null && cell.getCellType() != CellType.BLANK) {
+            isEmpty = false;
+            break;
+        }
+    }
+    return isEmpty;
+}
+@GetMapping("/getDepartments")
+@ResponseBody
+public List<Department> getDepartment(){
+    System.out.println("Get /getDepartments");
+    List<Department>departments=departmentService.getAllDepartments();
+    for (Department department : departments) {
+        System.out.println(department);
+    }
+    return departments;
+}
+@GetMapping("/deleteDepartment/{id}")
+public String deleteDepartment(@PathVariable(value = "id") long id){
+    this.departmentService.deleteDepartmentById(id);
+    return "redirect:/department";
+}
 }

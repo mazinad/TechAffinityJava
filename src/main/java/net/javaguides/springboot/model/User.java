@@ -1,6 +1,8 @@
 package net.javaguides.springboot.model;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -43,15 +45,16 @@ public class User {
 				            name = "role_id", referencedColumnName = "id"))
 	
 	private Collection<Role> roles;
-	@ManyToOne
-	@JoinColumn(name = "department_id")
-	private Department department;
-	public User() {
-		
-	}
+	@ManyToMany
+    @JoinTable(name = "user_department",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "department_id", referencedColumnName = "departmentId"))
+    private Set<Department> department = new HashSet<>();
 	
-	public User(String firstName, String lastName, String email, String password, Collection<Role> roles, Department department) {
-		super();
+	public User() {
+	}
+	public User(String firstName, String lastName, String email, String password, Collection<Role> roles,
+			Set<Department> department) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
@@ -59,18 +62,6 @@ public class User {
 		this.roles = roles;
 		this.department = department;
 	}
-	
-	
-
-	public User(Long id, String firstName, String lastName, String email,String password,Department department) {
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.password = password;
-		this.department = department;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -107,13 +98,16 @@ public class User {
 	public void setRoles(Collection<Role> roles) {
 		this.roles = roles;
 	}
-
-	public Department getDepartment() {
+	public Set<Department> getDepartment() {
 		return department;
 	}
-
-	public void setDepartment(Department department) {
+	public void setDepartment(Set<Department> department) {
 		this.department = department;
 	}
+	
+	
+	
+	
+	
 	
 }

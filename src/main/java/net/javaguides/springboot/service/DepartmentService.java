@@ -11,5 +11,6 @@ public interface DepartmentService {
     List<Department> getAllDepartments();
     Department getDepartmentById(Long id);
     void deleteDepartmentById(long id);
+    Department getDepartmentById(int numericCellValue);
 
 }

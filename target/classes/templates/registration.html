@@ -8,6 +8,7 @@
 	integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
 	crossorigin="anonymous">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -45,10 +46,10 @@
 			</div>
 			<div class="col-md-12">
 				<label for="validationCustom04" class="form-label">Department</label>
-				<select class="form-select col-md-4" id="validationCustom04" th:field="*{department}" required>
-
+				<br>
+				<select class="form-control col-md-4" id="my-select" th:field="*{department}" multiple>
 					<th:block th:each="cat: ${listDepartments}">
-                        <option th:text="${cat.department_name}" th:value="${cat.department_id}" />
+                        <option th:text="${cat.departmentName}" th:value="${cat.departmentId}" />
                     </th:block>
 				</select>
 				<div class="invalid-feedback">
@@ -76,13 +77,20 @@
 		  </form>
 	</div>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#my-select').select2();
+    });
+  </script>
 	<script>
 		// Example starter JavaScript for disabling form submissions if there are invalid fields
-(function () {
-  'use strict'
+	(function () {
+  	'use strict'
 
   // Fetch all the forms we want to apply custom Bootstrap validation styles to
-  var forms = document.querySelectorAll('.needs-validation')
+  	var forms = document.querySelectorAll('.needs-validation')
 
   // Loop over them and prevent submission
   Array.prototype.slice.call(forms)

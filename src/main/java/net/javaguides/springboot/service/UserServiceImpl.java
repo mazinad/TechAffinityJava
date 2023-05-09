@@ -2,7 +2,11 @@ package net.javaguides.springboot.service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,7 @@ import net.javaguides.springboot.model.Department;
 import net.javaguides.springboot.model.Role;
 import net.javaguides.springboot.model.User;
 import net.javaguides.springboot.repository.DepartmentRepository;
+import net.javaguides.springboot.repository.RoleRepository;
 import net.javaguides.springboot.repository.UserRepository;
 import net.javaguides.springboot.web.dto.UserRegistrationDto;
 
@@ -29,6 +34,8 @@ public class UserServiceImpl implements UserService{
 	private BCryptPasswordEncoder passwordEncoder;
 	@Autowired
 	private DepartmentRepository departmentRepository;
+	@Autowired
+	private RoleRepository roleRepository;
 	public UserServiceImpl(UserRepository userRepository) {
 		super();
 		this.userRepository = userRepository;
@@ -36,16 +43,24 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public User save(UserRegistrationDto registrationDto) {
-		Department department = departmentRepository.findById(registrationDto.getDepartment().getDepartment_id()).orElseThrow(() -> new RuntimeException("Department not found"));
-		User user = new User(registrationDto.getFirstName(), 
-				registrationDto.getLastName(), 
-				registrationDto.getEmail(),
-				passwordEncoder.encode(registrationDto.getPassword()), 
-				Arrays.asList(new Role("ROLE_USER")), 
-				department);
+		List<Long> departmentIds = registrationDto.getDepartment();
+		Set<Department> departments = new HashSet<>();
+		for (Long id : departmentIds) {
+			Department department = departmentRepository.findById(id)
+					.orElseThrow(() -> new RuntimeException("Department not found"));
+			departments.add(department);
+		}
 		
+		User user = new User(registrationDto.getFirstName(),
+				registrationDto.getLastName(),
+				registrationDto.getEmail(),
+				passwordEncoder.encode(registrationDto.getPassword()),
+				Arrays.asList(new Role("ROLE_USER")),
+				departments);
+	
 		return userRepository.save(user);
 	}
+	
 	
 
 	@Override
@@ -70,10 +85,24 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public void deleteByIds(Long id) {
-		System.out.println("id: " + id);
-		// TODO Auto-generated method stub
-		this.userRepository.deleteById(id);
-	}
+    Optional<User> user = this.userRepository.findById(id);
+
+    if (user.isPresent()) {
+        Collection<Role> roles = user.get().getRoles();
+        if (roles.stream().anyMatch(r -> r.getName().equals("ROLE_USER"))) {
+            user.get().setRoles(new HashSet<Role>());
+            this.userRepository.save(user.get());
+            this.userRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Only users with ROLE_USER can be deleted");
+        }
+    } else {
+        throw new IllegalArgumentException("User not found");
+    }
+}
+
+
+
 
 	@Override
 	public User findById(Long id) {

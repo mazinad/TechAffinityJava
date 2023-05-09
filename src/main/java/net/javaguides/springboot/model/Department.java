@@ -12,21 +12,18 @@ import javax.persistence.OneToMany;
 public class Department {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long department_id;
-   private String department_name;
-   @OneToMany(mappedBy = "department")
-   private List<User> users;
-
-   public Long getDepartment_id() {
-        return department_id;
-    }
-    public void setDepartment_id(Long department_id) {
-        this.department_id = department_id;
-    }
-    public String getDepartment_name() {
-        return department_name;
-    }
-    public void setDepartment_name(String department_name) {
-        this.department_name = department_name;
-    }
+   private Long departmentId;
+   private String departmentName;
+   public Long getDepartmentId() {
+    return departmentId;
+}
+public void setDepartmentId(Long departmentId) {
+    this.departmentId = departmentId;
+}
+public String getDepartmentName() {
+    return departmentName;
+}
+public void setDepartmentName(String departmentName) {
+    this.departmentName = departmentName;
+}   
 }

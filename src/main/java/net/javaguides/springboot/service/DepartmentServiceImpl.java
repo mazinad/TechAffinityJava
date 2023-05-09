@@ -33,7 +33,13 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void deleteDepartmentById(long id) {
         // TODO Auto-generated method stub
-        departmentRepository.deleteById(id);
+        this.departmentRepository.deleteById(id);
+    }
+
+    @Override
+    public Department getDepartmentById(int numericCellValue) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDepartmentById'");
     }
     
 }

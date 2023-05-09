@@ -35,6 +35,24 @@
 
 	<div class="container">
 		<a class="btn btn-primary" th:href="@{/showNewDepartmentForm}">Add Department</a>
+		<form th:action="@{/upload-departments}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+              <!-- <label for="fileInput" class="form-label">Select file to upload:</label> -->
+              <input type="file" class="form-control" id="file" name="file">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </form>
+		  <div th:if="${param.success}" id="success-alert">
+			<div class="alert alert-success">
+			  <p th:text="${param.success}"></p>
+			</div>
+		  </div>
+		  
+		  <div th:if="${param.error}" id="error-alert">
+			<div class="alert alert-danger">
+			  <p th:text="${param.error}"></p>
+			</div>
+		  </div>
 		<a th:href="@{/export-to-excel1}" class="float-right"> <i class="fa fa-file-excel-o" style="font-size:36px;color:green"></i></a>
 		<br/><br/>
 		<table class="table table-bordered table-striped" id="departmentTable">
@@ -47,10 +65,10 @@
 			</thead>
 			<tbody>
 				<tr th:each="department : ${listDepartments}">
-					<td th:text="${department.department_name}"></td>
+					<td th:text="${department.departmentName}"></td>
 					 <td> 
-						<a th:href="@{/editDepartment/{id}(id=${department.department_id})}" class="btn btn-warning"><i class="fa fa-pencil"></i></a>
-					    <a href="#" id="deleteModal" data-toggle="modal" data-target="#deleteConfirmationModal" th:data-id="${department.department_id}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+						<a th:href="@{/editDepartment/{id}(id=${department.departmentId})}" class="btn btn-warning"><i class="fa fa-pencil"></i></a>
+					    <a href="#" id="deleteModal1" data-toggle="modal" data-target="#deleteConfirmationModal" th:data-id="${department.departmentId}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
 					</td>
 				</tr>
 			</tbody>
@@ -81,14 +99,14 @@
 		$('#deleteConfirmationModal').on('show.bs.modal', function (event) {
 		  var button = $(event.relatedTarget) // Button that triggered the modal
 		  var userId = button.data('id') // Extract info from data-* attributes
-		  $('#deleteModal').attr("data-id", userId); // Update data-id attribute
+		  $('#deleteModal1').attr("data-id", userId); // Update data-id attribute
 		})
 	
 		$('#delete').on('click', function (event) {
-			var departmentId = $('#deleteModal').attr("data-id") // Extract info from data-* attributes
+			var userId = $('#deleteModal1').attr("data-id") // Extract info from data-* attributes
 			console.log(userId)
 			$.ajax({
-    			url: `/deletedepartment/${departmentId}`,
+    			url: `/deleteDepartment/${userId}`,
     			method: "GET",
     		success: function(response) {
         // Handle the success response
@@ -96,33 +114,31 @@
         	$('#deleteConfirmationModal').modal('hide');
         
         // Reload the table by making a separate AJAX call to get the updated data
-        // $.ajax({
-        //     url: "/getUsers",
-        //     type: "GET",
-        //     dataType: "json",
-        //     success: function(data) {
-        //         // Clear the existing table data
-        //         $('#deaprtmentTable tbody').empty();
+        $.ajax({
+            url: "/getDepartments",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                // Clear the existing table data
+                $('#departmentTable tbody').empty();
 
-        //         // Loop through the data and append rows to the table
-        //         $.each(data, function(index, user) {
-        //             $('#userTable tbody').append(`
-        //                 <tr>
-        //                     <td>${user.firstName}</td>
-        //                     <td>${user.lastName}</td>
-        //                     <td>${user.email}</td>
-        //                     <td> 
-        //                         <a th:href="@{/editUser/{id}(id=${user.id})}" class="btn btn-warning"><i class="fa fa-pencil"></i></a>
-		// 						<a href="#" id="deleteModal" data-toggle="modal" data-target="#deleteConfirmationModal" th:data-id="${user.id}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-        //                    </td>
-        //                 </tr>
-        //             `);
-        //         });
-        //     },
-        //     error: function(xhr) {
-        //         console.log(xhr);
-        //     }
-        // });
+                // Loop through the data and append rows to the table
+                $.each(data, function(index, department) {
+                    $('#departmentTable tbody').append(`
+                        <tr>
+                            <td>${department.departmentName}</td>
+                            <td> 
+								<a th:href="@{/editDepartment/{id}(id=${department.departmentId})}" class="btn btn-warning"><i class="fa fa-pencil"></i></a>
+					   		    <a href="#" id="deleteModal1" data-toggle="modal" data-target="#deleteConfirmationModal" th:data-id="${department.departmentId}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+					</td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function(xhr) {
+                console.log(xhr);
+            }
+        });
     },
     error: function(xhr) {
         // Handle the error response

@@ -10,7 +10,8 @@ import javax.persistence.Table;
 @Table(name = "role")
 public class Role {
 	
-	@Id
+	public static final Role ROLE_USER = new Role("ROLE_USER");
+    @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;

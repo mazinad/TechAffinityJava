@@ -23,7 +23,7 @@ public class DepartmentExcelExporter {
         workbook = new XSSFWorkbook();
     }
     public void writeHeader() {
-        sheet = workbook.createSheet("Users");
+        sheet = workbook.createSheet("Department");
         Row row = sheet.createRow(0);
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
@@ -58,8 +58,8 @@ public class DepartmentExcelExporter {
         for (Department users : listUsers) {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
-            createCell(row, columnCount++, users.getDepartment_id(), style);
-            createCell(row, columnCount++, users.getDepartment_name(), style);
+            createCell(row, columnCount++, users.getDepartmentId(), style);
+            createCell(row, columnCount++, users.getDepartmentName(), style);
         }
     }
     public void generateExcelFile(HttpServletResponse response) throws IOException {
